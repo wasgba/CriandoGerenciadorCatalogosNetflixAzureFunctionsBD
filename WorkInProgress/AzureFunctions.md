@@ -1,86 +1,75 @@
 # Cenários do Azure Functions
 
-- Artigo
-- 19/12/2024
-- 9 colaboradores
+**Artigo** | Data: 07/03/2025 | Colaboradores: 10
 
-Comentários
+Este tutorial apresenta diversos cenários de uso do Azure Functions. Se você deseja criar APIs web, processar eventos em tempo real, manipular arquivos ou agendar tarefas, entre outros, o Azure Functions pode ser a solução sem servidor ideal para o seu projeto.
 
-Escolha uma linguagem de programação
+> Dica: Escolha sua linguagem de programação preferida (C#, Java, JavaScript, PowerShell, Python, TypeScript) conforme o cenário.
 
-C#JavaJavaScriptPowerShellPythonTypeScript
+---
 
-Neste artigo[Processar uploads de arquivo](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-scenarios?pivots=programming-language-csharp#process-file-uploads)[Processamento de eventos e fluxo em tempo real](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-scenarios?pivots=programming-language-csharp#real-time-stream-and-event-processing)[Machine learning e IA](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-scenarios?pivots=programming-language-csharp#machine-learning-and-ai)[Executar tarefas agendadas](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-scenarios?pivots=programming-language-csharp#run-scheduled-tasks)Mostrar mais 5
+## 1. Processar Uploads de Arquivo
 
-Muitas vezes, criamos sistemas para reagir a uma série de eventos críticos. Se você estiver criando uma API Web, respondendo a alterações de banco de dados, processando fluxos de eventos ou mensagens, o Azure Functions pode ser usado para implementá-las.
+Utilize funções para processar arquivos enviados para contêineres de blobs – ideal para cenários em que, por exemplo, parceiros enviam catálogos de produtos.
 
-Em muitos casos, uma função [integra-se a uma matriz de serviços de nuvem](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-triggers-bindings) para fornecer implementações ricas em recursos. Veja a seguir um conjunto comum (mas não exaustivo) de cenários para o Azure Functions.
+- **Como funciona:**  
+  Ao fazer upload de um arquivo, uma função disparada (Blob Trigger) valida, transforma e processa cada registro do arquivo.
 
-Selecione sua linguagem de desenvolvimento na parte superior do artigo.
+- **Exemplo em C# (Trigger de Blob):**
 
+  ```csharp
+  [FunctionName("ProcessCatalogData")]
+  public static async Task Run(
+      [BlobTrigger("catalog-uploads/{name}", Source = BlobTriggerSource.EventGrid, Connection = "<NAMED_STORAGE_CONNECTION>")] Stream myCatalogData,
+      string name,
+      ILogger log)
+  {
+      log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myCatalogData.Length} Bytes");
 
-
-## Processar uploads de arquivo
-
-Há várias maneiras de usar funções para processar arquivos dentro ou fora de um contêiner de armazenamento de blobs. Para saber mais sobre as opções para disparar em um contêiner de blob, confira [Trabalhando com blobs](https://learn.microsoft.com/pt-br/azure/azure-functions/storage-considerations#working-with-blobs) na documentação de melhores práticas.
-
-Por exemplo, em uma solução de varejo, um sistema de parceiros pode enviar informações do catálogo de produtos como arquivos para o armazenamento de blobs. Você pode usar uma função disparada por blob para validar, transformar e processar os arquivos no sistema main conforme eles são carregados.
-
-[![Diagrama de um processo de upload de arquivo usando o Azure Functions.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/process-file-uploads.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/process-file-uploads-expanded.png#lightbox)
-
-Os tutoriais a seguir usam um gatilho de Blob (baseado em Grade de Eventos) para processar arquivos em um contêiner de blob:
-
-Por exemplo, usando o gatilho de blob com uma assinatura de evento em contêineres de blob:
-
-C#
-
-```csharp
-[FunctionName("ProcessCatalogData")]
-public static async Task Run([BlobTrigger("catalog-uploads/{name}", Source = BlobTriggerSource.EventGrid, Connection = "<NAMED_STORAGE_CONNECTION>")]Stream myCatalogData, string name, ILogger log)
-{
-    log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {myCatalogData.Length} Bytes");
-
-    using (var reader = new StreamReader(myCatalogData))
-    {
-        var catalogEntry = await reader.ReadLineAsync();
-        while(catalogEntry !=null)
-        {
-            // Process the catalog entry
-            // ...
-
-            catalogEntry = await reader.ReadLineAsync();
-        }
-    }
-}
-```
-
-- [Carregar e analisar um arquivo com o Azure Functions e o Armazenamento de Blobs](https://learn.microsoft.com/pt-br/azure/storage/blobs/blob-upload-function-trigger)
-- [Disparar o Azure Functions em contêineres de blob usando uma assinatura de evento](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-event-grid-blob-trigger?pivots=programming-language-csharp)
+      using (var reader = new StreamReader(myCatalogData))
+      {
+          var catalogEntry = await reader.ReadLineAsync();
+          while (catalogEntry != null)
+          {
+              // Processa a entrada do catálogo.
+              // ...
+              catalogEntry = await reader.ReadLineAsync();
+          }
+      }
+  }
 
 
+Links úteis:
 
-## Processamento de eventos e fluxo em tempo real
+1. **Carregar e analisar um arquivo com o Azure Functions e o Armazenamento de Blobs**  
+   Aqui, você pode aprender a usar o Azure Functions com o Armazenamento de Blobs para carregar e processar arquivos.  
+   [Saiba mais](https://learn.microsoft.com/pt-br/azure/storage/blobs/blob-upload-function-trigger?tabs=azure-portal)
 
-Muita telemetria é gerada e coletada de aplicativos em nuvem, dispositivos IoT e dispositivos de rede. O Azure Functions pode processar esses dados quase em tempo real como o caminho crítico e, em seguida, armazená-los no [Azure Cosmos DB](https://learn.microsoft.com/pt-br/azure/cosmos-db/introduction) para uso em um painel de análise.
+2. **Disparar o Azure Functions usando uma assinatura de evento em contêineres de blob**
+   Neste caso, você descobrirá como disparar o Azure Functions quando um arquivo é carregado em um contêiner de blob.  
+   [Saiba mais](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-event-grid-blob-trigger?pivots=programming-language-csharp)
 
-Suas funções também podem usar gatilhos de evento de baixa latência, como a Grade de Eventos, e saídas em tempo real, como o SignalR, para processar dados quase em tempo real.
 
-[![Diagrama de um processo de fluxo em tempo real usando o Azure Functions.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/real-time-stream-processing.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/real-time-stream-processing-expanded.png#lightbox)
+![image](https://github.com/user-attachments/assets/5c1cba40-d527-4ec7-8ef0-776a15df22f8)
 
-Por exemplo, usando o gatilho de hubs de eventos para ler de um hub de eventos e a associação de saída para gravar em um hub de eventos depois de depurar e transformar os eventos:
+Diagrama de Upload de Arquivo
 
-C#
+## 2.Processamento de Eventos e Fluxo em Tempo Real
+Ideal para manipular grandes volumes de dados gerados por aplicativos, dispositivos IoT e outras fontes, processando informações quase em tempo real.
 
-```csharp
+
+Como funciona:  
+
+Funções usando gatilhos de Event Hub ou Grade de Eventos recebem e transformam dados em tempo real, enviando-os para bancos de dados como o Azure Cosmos DB.
+
+
+Exemplo em C# (Gatilho de Event Hub):
+
+
 [FunctionName("ProcessorFunction")]
 public static async Task Run(
-    [EventHubTrigger(
-        "%Input_EH_Name%",
-        Connection = "InputEventHubConnectionString",
-        ConsumerGroup = "%Input_EH_ConsumerGroup%")] EventData[] inputMessages,
-    [EventHub(
-        "%Output_EH_Name%",
-        Connection = "OutputEventHubConnectionString")] IAsyncCollector<SensorDataRecord> outputMessages,
+    [EventHubTrigger("%Input_EH_Name%", Connection = "InputEventHubConnectionString", ConsumerGroup = "%Input_EH_ConsumerGroup%")] EventData[] inputMessages,
+    [EventHub("%Output_EH_Name%", Connection = "OutputEventHubConnectionString")] IAsyncCollector<SensorDataRecord> outputMessages,
     PartitionContext partitionContext,
     ILogger log)
 {
@@ -90,87 +79,98 @@ public static async Task Run(
     var xformer = new Transformer(log);
     await xformer.Transform(debatchedMessages, partitionContext.PartitionId, outputMessages);
 }
-```
 
-- [Streaming em escala com o Hubs de Eventos do Azure, Functions e SQL do Azure](https://github.com/Azure-Samples/streaming-at-scale/tree/main/eventhubs-functions-azuresql)
-- [Streaming em escala com Hubs de Eventos do Azure, Functions e Cosmos DB](https://github.com/Azure-Samples/streaming-at-scale/tree/main/eventhubs-functions-cosmosdb)
-- [Streaming em escala com o Hubs de Eventos do Azure com o produtor do Kafka, Functions com gatilho do Kafka e Cosmos DB](https://github.com/Azure-Samples/streaming-at-scale/tree/main/eventhubskafka-functions-cosmosdb)
-- [Streaming em escala com o Hub IoT do Azure, Functions e SQL do Azure](https://github.com/Azure-Samples/streaming-at-scale/tree/main/iothub-functions-azuresql)
-- [Gatilho de Hubs de Eventos do Azure para o Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-event-hubs-trigger?pivots=programming-language-csharp)
-- [Gatilho do Apache Kafka para Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-kafka-trigger?pivots=programming-language-csharp)
+
+Links úteis:
 
 
 
-## Machine learning e IA
+Streaming em escala com Hubs de Eventos, Functions e SQL do Azure
 
-Além do processamento de dados, o Azure Functions pode ser usados para inferir em modelos. A [Aextensão de associação do Azure OpenAI](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-openai) permite integrar facilmente recursos e comportamentos do [serviço Azure OpenAI](https://learn.microsoft.com/pt-br/azure/ai-services/openai/overview) em suas execuções de código de função.
+Gatilho de Hubs de Eventos do Azure para Azure Functions
 
-As funções podem se conectar a recursos OpenAI para habilitar conclusões de texto e chat, usar assistentes e aproveitar inserções e pesquisa semântica.
+![image](https://github.com/user-attachments/assets/c22cfa46-1122-4cfa-bd4a-bc526777a4e8)
 
-Uma função também pode chamar um modelo TensorFlow ou serviços de IA do Azure para processar e classificar um fluxo de imagens.
+Diagrama de Fluxo em Tempo Real
 
-[![Diagrama de um processo de aprendizado de máquina e IA usando o Azure Functions.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/machine-learning-and-ai.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/machine-learning-and-ai-expanded.png#lightbox)
-
-- Tutorial: [preenchimento de texto usando o Azure OpenAI](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-add-openai-text-completion?pivots=programming-language-csharp)
-- Exemplo: [Carregar arquivos de texto e acessar dados usando vários recursos do OpenAI](https://github.com/azure-samples/azure-functions-openai-demo).
-- Exemplo: [sumarização de texto usando o Serviço de Linguagem Cognitiva de IA](https://github.com/Azure-Samples/function-csharp-ai-textsummarize)
-- Amostra: [preenchimento de texto usando o Azure OpenAI](https://github.com/Azure/azure-functions-openai-extension/tree/main/samples/textcompletion/csharp-ooproc)
-- Amostra: [fornecer habilidades de assistente ao seu modelo](https://github.com/Azure/azure-functions-openai-extension/tree/main/samples/assistant/csharp-ooproc)
-- Amostra: [gerar inserções](https://github.com/Azure/azure-functions-openai-extension/tree/main/samples/embeddings/csharp-ooproc/Embeddings)
-- Amostra: [aproveitar a pesquisa semântica](https://github.com/Azure/azure-functions-openai-extension/tree/main/samples/rag-aisearch/csharp-ooproc)
+## 3. Machine Learning e IA
+As funções podem ser usadas para integrar modelos de aprendizado de máquina e inteligência artificial – conectando com serviços como o Azure OpenAI ou TensorFlow para análises e inferências.
 
 
+Como funciona:  
 
-## Executar tarefas agendadas
+Você pode invocar modelos de IA em resposta a eventos ou dados processados pela função, como para preenchimento de texto, sumarização ou classificação de imagens.
 
-As funções permitem que você execute seu código com base em um [agendamento cron](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-timer#usage) definido.
 
-Saiba como [Criar uma função no portal do Azure executada segundo uma agenda](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-create-scheduled-function).
+Links úteis:
 
-Um banco de dados do cliente de serviços financeiros, por exemplo, pode ser analisado para entradas duplicadas a cada 15 minutos para evitar que várias comunicações saiam para o mesmo cliente.
 
-[![Diagrama de uma tarefa agendada em que uma função limpa um banco de dados a cada 15 minutos, desduplicando as entradas com base na lógica de negócios.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/scheduled-task.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/scheduled-task-expanded.png#lightbox)
 
-C#
+Preenchimento de texto usando o Azure OpenAI
 
-```csharp
+Exemplo de sumarização de texto com IA
+
+Amostras do Azure Functions OpenAI Extension
+
+![image](https://github.com/user-attachments/assets/80d2ad9c-33d4-49f0-a798-3ea69308e6ec)
+
+Diagrama de Machine Learning e IA
+
+## 4. Executar Tarefas Agendadas
+Utilize funções para executar código em intervalos programados – ideal para tarefas recorrentes como limpeza de dados, sincronizações ou auditorias.
+
+
+Como funciona:  
+
+Com um agendamento cron, a função é disparada periodicamente para realizar a ação desejada.
+
+
+Exemplo em C# (Timer Trigger):
+
+
 [FunctionName("TimerTriggerCSharp")]
-public static void Run([TimerTrigger("0 */15 * * * *")]TimerInfo myTimer, ILogger log)
+public static void Run([TimerTrigger("0 */15 * * * *")] TimerInfo myTimer, ILogger log)
 {
     if (myTimer.IsPastDue)
     {
         log.LogInformation("Timer is running late!");
     }
     log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
-
-    // Perform the database deduplication
+    
+    // Realiza a deduplicação no banco de dados ou outra tarefa agendada.
 }
-```
-
-- [Gatilho de temporizador para o Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-timer?pivots=programming-language-csharp)
 
 
+Link útil:
 
-## Criar uma API Web escalonável
 
-Uma função disparada por HTTP define um ponto de extremidade HTTP. Esses pontos de extremidade executam código de função que pode se conectar a outros serviços diretamente ou usando extensões de associação. Você pode compor os pontos de extremidade em uma API baseada na Web.
 
-Você também pode usar um ponto de extremidade de função disparada por HTTP como uma integração de webhook, como os webhooks do GitHub. Dessa forma, você pode criar funções que processam dados de eventos do GitHub. Para saber mais, confira [Monitorar eventos do GitHub usando um webhook com o Azure Functions](https://learn.microsoft.com/pt-br/training/modules/monitor-github-events-with-a-function-triggered-by-a-webhook/).
+Gatilho de temporizador para o Azure Functions
 
-[![Diagrama de processamento de uma solicitação HTTP usando o Azure Functions.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/scalable-web-api.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/scalable-web-api-expanded.png#lightbox)
+![image](https://github.com/user-attachments/assets/e7586503-985f-4b18-998a-9687e5906612)
 
-Para obter exemplos, confira o seguinte:
 
-C#
+Diagrama de Tarefa Agendada
 
-```csharp
+## 5. Criar uma API Web Escalonável
+Funções disparadas por HTTP permitem a construção de APIs sem servidor, facilitando a criação de endpoints para webhooks, integrações e comunicação com outros serviços.
+
+
+Como funciona:  
+
+Uma função HTTP pode receber requisições, processar dados e interagir com bancos de dados ou outros sistemas.
+
+
+Exemplo em C# (HTTP Trigger com Cosmos DB):
+
+
 [FunctionName("InsertName")]
 public static async Task<IActionResult> Run(
     [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req,
     [CosmosDB(
         databaseName: "my-database",
         collectionName: "my-container",
-        ConnectionStringSetting = "CosmosDbConnectionString")]IAsyncCollector<dynamic> documentsOut,
+        ConnectionStringSetting = "CosmosDbConnectionString")] IAsyncCollector<dynamic> documentsOut,
     ILogger log)
 {
     string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -182,71 +182,94 @@ public static async Task<IActionResult> Run(
         return new BadRequestObjectResult("Please pass a name in the request body json");
     }
 
-    // Add a JSON document to the output container.
     await documentsOut.AddAsync(new
     {
-        // create a random ID
-        id = System.Guid.NewGuid().ToString(), 
+        id = System.Guid.NewGuid().ToString(), // Cria um ID aleatório
         name = name
     });
 
     return new OkResult();
 }
-```
-
-- Artigo: [criar APIs sem servidor no Visual Studio usando o Azure Functions e a integração do Gerenciamento de API](https://learn.microsoft.com/pt-br/azure/azure-functions/openapi-apim-integrate-visual-studio)
-- Treinamento: [expor vários aplicativos de funções como uma API consistente, usando o Gerenciamento de API do Azure](https://learn.microsoft.com/pt-br/training/modules/build-serverless-api-with-functions-api-management/)
-- Exemplo: [Implemente o padrão de nó geográfico implantando a API em nós geográficos em regiões distribuídas do Azure.](https://github.com/mspnp/geode-pattern-accelerator)
-- Artigo: [Gatilho HTTP do Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-http-webhook?pivots=programming-language-csharp)
-- Exemplo: [aplicativo Web com uma API C# e BD SQL do Azure em Aplicativos Web Estáticos e Functions](https://learn.microsoft.com/pt-br/samples/azure-samples/todo-csharp-sql-swa-func/todo-csharp-sql-swa-func/)
 
 
+Links úteis:
 
-## Criar um fluxo de trabalho sem servidor
-
-As funções geralmente são o componente de computação em uma topologia de fluxo de trabalho sem servidor, como um fluxo de trabalho dos Aplicativos Lógicos. Você também pode criar orquestrações de execução longa usando a extensão Durable Functions. Para obter mais informações, confira [Visão geral do Durable Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/durable/durable-functions-overview).
-
-[![Um diagrama de combinação de uma série de fluxos de trabalho sem servidor específicos usando o Azure Functions.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/build-a-serverless-workflow.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/build-a-serverless-workflow-expanded.png#lightbox)
-
-- Tutorial: [criar uma função que se integra aos Aplicativos Lógicos do Azure](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-twitter-email)
-- Início rápido: [criar sua primeira função durável no Azure usando C#](https://learn.microsoft.com/pt-br/azure/azure-functions/durable/durable-functions-isolated-create-first-csharp)
-- Treinamento: [implantar as APIs sem servidor com o Azure Functions, Aplicativos Lógicos e Banco de Dados SQL do Azure](https://learn.microsoft.com/pt-br/training/modules/deploy-backend-apis/)
+![image](https://github.com/user-attachments/assets/0f9b74bd-f3d9-4116-a8a9-d86fbfdb910e)
 
 
+Gatilho HTTP do Azure Functions
 
-## Responder a alterações no banco de dados
+Exemplo: API com Azure Functions, Aplicativos Web Estáticos e BD SQL do Azure
 
-Há processos em que talvez seja necessário registrar, auditar ou executar alguma outra operação quando os dados armazenados forem alterados. Os gatilhos de funções fornecem uma boa maneira de ser notificado sobre alterações de dados para inicializar essa operação.
 
-[![Diagrama de uma função usada para responder a alterações no banco de dados.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/respond-to-database-changes.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/respond-to-database-changes-expanded.png#lightbox)
+Diagrama da API Web Escalonável
 
-Considere estes exemplos:
+## 6. Criar um Fluxo de Trabalho Sem Servidor
+O Azure Functions pode ser parte integrante de fluxos de trabalho sem servidor – integrando com Aplicativos Lógicos ou usando a extensão Durable Functions para orquestração de processos.
 
-- Artigo: [conectar o Azure Functions ao Azure Cosmos DB usando o Visual Studio Code](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-add-output-binding-cosmos-db-vs-code?pivots=programming-language-csharp&tabs=isolated-process)
-- Artigo: [conectar o Azure Functions ao Banco de Dados SQL do Azure usando o Visual Studio Code](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-add-output-binding-azure-sql-vs-code?pivots=programming-language-csharp&tabs=isolated-process)
-- Artigo: [usar o Azure Functions para limpar um Banco de Dados SQL do Azure](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-scenario-database-table-cleanup)
+
+Como funciona:  
+
+Combine várias funções para comandar um fluxo de trabalho mais complexo ou de longa duração.
+
+
+Links úteis:
 
 
 
-## Criar sistemas de mensagens confiáveis
+Visão geral do Durable Functions
 
-Você pode usar o Functions com os serviços de mensagens do Azure para criar soluções avançadas de mensagens controladas por eventos.
-
-Por exemplo, você pode usar gatilhos em filas do Armazenamento do Microsoft Azure como uma maneira de encadear uma série de execuções de função. Ou use filas e gatilhos do barramento de serviço para um sistema de pedidos online.
-
-[![Diagrama do Azure Functions em um sistema de mensagens confiável.](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/create-reliable-message-systems.png)](https://learn.microsoft.com/pt-br/azure/azure-functions/media/functions-scenarios/create-reliable-message-systems-expanded.png#lightbox)
-
-Estes artigos mostram como gravar a saída em uma fila de armazenamento:
-
-- Artigo: [conectar o Azure Functions ao Armazenamento do Microsoft Azure usando o Visual Studio Code](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-add-output-binding-storage-queue-vs-code?pivots=programming-language-csharp&tabs=isolated-process)
-- Artigo: [criar uma função disparada pelo Armazenamento de Filas do Azure (portal do Azure)](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-create-storage-queue-triggered-function)
-
-E esses artigos mostram como disparar de uma fila ou tópico do Barramento de Serviço do Azure.
-
-- [Gatilho do Barramento de Serviço do Azure para Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-bindings-service-bus-trigger?pivots=programming-language-csharp)
+Criar uma função integrada aos Aplicativos Lógicos do Azure
+![image](https://github.com/user-attachments/assets/50de0bf8-f514-43e3-a8e3-f1156dc1e35d)
 
 
+Diagrama de Fluxo de Trabalho Sem Servidor
 
-## Próximas etapas
+## 7. Responder a Alterações no Banco de Dados
+Crie funções que sejam acionadas quando houver alterações em seus dados, permitindo registrar, auditar ou processar essas modificações.
 
-[Introdução ao Azure Functions](https://learn.microsoft.com/pt-br/azure/azure-functions/functions-get-started)
+
+Como funciona:  
+
+Gatilhos específicos (como os do Cosmos DB ou Banco de Dados SQL) permitem reagir a inserções, atualizações ou deleções.
+
+
+Links úteis:
+
+
+
+Azure Functions com Azure Cosmos DB no Visual Studio Code
+
+Limpeza de banco de dados SQL do Azure com Azure Functions
+
+![image](https://github.com/user-attachments/assets/53d3358c-9bb1-4f45-8218-ed5433fb4d62)
+
+Diagrama de Alterações no Banco de Dados
+
+## 8. Criar Sistemas de Mensagens Confiáveis
+Utilize funções para orquestrar fluxos de mensagens com serviços como filas ou o Barramento de Serviço do Azure, garantindo uma comunicação robusta e escalonável entre componentes do sistema.
+
+
+Como funciona:  
+
+As funções podem enviar e consumir mensagens de filas (como as do Armazenamento do Microsoft Azure) ou tópicos do Barramento de Serviço.
+
+
+Links úteis:
+
+
+
+Azure Functions e Armazenamento de Filas com Visual Studio Code
+
+Gatilho do Barramento de Serviço do Azure para Functions
+
+![image](https://github.com/user-attachments/assets/27e03c6d-5e1d-4fc4-8a1e-6e052f5aee43)
+
+
+Diagrama de Sistemas de Mensagens Confiáveis
+
+Próximas Etapas
+Para começar a explorar e implementar o Azure Functions em seus projetos, confira a Introdução ao Azure Functions.
+
+Este tutorial oferece uma visão geral estruturada dos cenários mais comuns com o Azure Functions. Experimente os exemplos, adapte-os ao seu contexto e potencialize suas aplicações sem servidor!
+## Was
