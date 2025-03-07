@@ -1,36 +1,48 @@
-# O que é o Explorador de Catálogos?
+# Explorador de Catálogos Databricks: Uma Visão Geral Atualizada (2025)
 
-- Artigo
-- 07/07/2024
-- 2 colaboradores
+*Artigo atualizado em: 07/03/2025*
 
-Comentários
+O Explorador de Catálogos do Databricks é uma interface unificada para explorar e gerenciar seus dados, esquemas (bancos de dados), tabelas, modelos de ML, funções e outros ativos de IA dentro do seu ambiente Databricks. Ele centraliza o gerenciamento de metadados, facilitando a descoberta, o acesso e a governança dos seus dados.
 
-O Explorador do Catálogo do Databricks fornece uma interface do usuário para explorar e gerenciar dados, esquemas (bancos de dados), tabelas, modelos, funções e outros ativos de IA. Para abrir o Gerenciador de Catálogos, clique em ![Ícone do catálogo](https://learn.microsoft.com/pt-br/azure/databricks/_static/images/icons/data-icon.png) **Catálogo** na barra lateral.
+Para acessar o Explorador de Catálogos, procure pelo ícone de **Catálogo** ![Ícone do catálogo](https://learn.microsoft.com/pt-br/azure/databricks/_static/images/icons/data-icon.png) na barra lateral do seu workspace Databricks e clique nele.
 
+## Funcionalidades do Explorador de Catálogos
 
+O Explorador de Catálogos oferece duas categorias principais de funcionalidades:
 
-## O que você pode fazer com o Explorador de Catálogos?
+**1. Descoberta de Ativos de Dados:**
 
-O Gerenciador de Catálogos tem duas funções principais:
+*   **Navegação e Visualização:** Explore seus catálogos, esquemas e tabelas. Visualize dados de amostra, metadados e detalhes de colunas.
+*   **Entendimento de Relacionamentos:** Examine relacionamentos entre tabelas e outros ativos de dados para entender a estrutura e a dependência dos seus dados.  Utilize o Diagrama de Relacionamento de Entidades para uma visualização gráfica (consulte o link abaixo).
+*   **Pesquisa e Filtro:** Encontre rapidamente ativos de dados específicos usando recursos de pesquisa e filtro avançados.
+*   **Exploração de Modelos ML:** Descubra e gerencie modelos de Machine Learning, incluindo seus metadados, versões e experimentos associados (consulte o link abaixo).
 
-- Encontrando ativos de dados.
+**2. Gerenciamento do Catálogo Unity e Compartilhamento Delta:**
 
-  Por exemplo, você pode usar o Gerenciador de Catálogos para exibir os detalhes do esquema, visualizar dados de amostra, ver detalhes de tabelas e modelos e explorar relacionamentos entre entidades. Para saber como usar o Gerenciador de Catálogos para descobrir dados, consulte [Descobrir dados](https://learn.microsoft.com/pt-br/azure/databricks/discover/) e os artigos listados abaixo.
+*   **Governança Centralizada:** Utilize o Catálogo Unity para governança unificada de dados em todos os seus workspaces do Databricks.
+*   **Gerenciamento de Acesso:** Conceda e revogue permissões em objetos de dados para controlar o acesso e garantir a segurança dos seus dados.
+*   **Gerenciamento de Catálogos:** Crie, modifique e gerencie catálogos para organizar seus dados de maneira lógica.
+*   **Compartilhamento Delta:** Configure e gerencie compartilhamentos para compartilhar dados de forma segura com outros usuários e organizações usando o protocolo Delta Sharing.
+*   **Gerenciamento de Locais Externos:** Defina e gerencie locais externos para acessar dados armazenados em fontes de dados externas.
+*   **Controle de Propriedade:** Visualize e altere a propriedade de objetos de dados para garantir o controle e a responsabilidade adequados.
 
-- Gerenciando o Catálogo do Unity e o Compartilhamento Delta.
+## Recursos Adicionais
 
-  Por exemplo, você pode usar o Gerenciador de Catálogos para criar catálogos, criar compartilhamentos, gerenciar locais externos, visualizar e alterar a propriedade de objetos e conceder e revogar permissões em todos os objetos. Para saber como usar o Gerenciador de Catálogos para gerenciar o Catálogo do Unity e o Compartilhamento Delta, consulte [O que é o Catálogo do Unity?](https://learn.microsoft.com/pt-br/azure/databricks/data-governance/unity-catalog/).
+Explore os seguintes artigos para aprender mais sobre como usar o Explorador de Catálogos:
 
-Esta seção inclui os seguintes artigos que descrevem como executar algumas dessas tarefas de descoberta de dados e gerenciamento de objetos usando o Gerenciador de Catálogos.
+*   **Explorar Modelos:** [https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/explore-models](https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/explore-models)
+*   **Exibir o Diagrama de Relacionamento de Entidades:** [https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/entity-relationship-diagram](https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/entity-relationship-diagram)
+*   **O que é o Catálogo Unity?:** [https://learn.microsoft.com/pt-br/azure/databricks/data-governance/unity-catalog/](https://learn.microsoft.com/pt-br/azure/databricks/data-governance/unity-catalog/)
+*   **Descobrir dados:** [https://learn.microsoft.com/pt-br/azure/databricks/discover/](https://learn.microsoft.com/pt-br/azure/databricks/discover/)
 
-- [Explorar modelos](https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/explore-models)
-- [Exibir o Diagrama de Relacionamento de Entidades](https://learn.microsoft.com/pt-br/azure/databricks/catalog-explorer/entity-relationship-diagram)
+**Observação:** A interface do usuário do Explorador de Catálogos pode não estar ativa em todos os workspaces do Azure Databricks. Se você estiver usando uma versão mais antiga do Databricks, consulte a documentação apropriada para sua versão.
 
- Observação
+## Observações Finais e Melhorias Recentes
 
-A interface do usuário do Explorador do Catálogo não está ativa em todos os workspaces do Azure Databricks. Para obter informações sobre a interface do usuário anterior, confira [Explorar e criar tabelas no DBFS](https://learn.microsoft.com/pt-br/azure/databricks/archive/legacy/data-tab).
-
-------
+*   O Explorador de Catálogos está em constante evolução.  Verifique as notas de lançamento do Databricks para as últimas funcionalidades e atualizações.
+*   A integração com o Catálogo Unity é o foco principal, portanto, certifique-se de explorar os recursos de governança e compartilhamento de dados que ele oferece.
+*   A capacidade de pesquisar e descobrir ativos de dados foi significativamente aprimorada nas versões recentes.
 
 ## Comentários
+
+Se você tiver alguma dúvida ou feedback sobre o Explorador de Catálogos, por favor, entre em contato com a equipe do Databricks ou poste na comunidade Databricks.  Seus comentários são importantes para melhorar a ferramenta.
